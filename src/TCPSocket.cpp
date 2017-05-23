@@ -5,7 +5,8 @@ SocketSession::SocketSession() {
 		throw std::system_error(WSAGetLastError(), std::system_category(), "WSA startup failed");
 }
 SocketSession::~SocketSession() {
-	WSACleanup();
+	if(WSACleanup() == SOCKET_ERROR)
+		throw std::system_error(WSAGetLastError(), std::system_category(), "WSA cleanup failed");
 }
 
 TCPSocket::TCPSocket() {
@@ -16,7 +17,8 @@ TCPSocket::TCPSocket(SOCKET s) {
 	sock = s;
 }
 TCPSocket::~TCPSocket() {
-	closesocket(sock);
+	if(closesocket(sock) != 0)
+		throw std::system_error(WSAGetLastError(), std::system_category(), "failed to close socket");
 }
 void TCPSocket::Connect(std::string serverIn) {
 	std::string address, port;
@@ -45,7 +47,8 @@ void TCPSocket::Send(std::string data, int flags) {
 		throw std::system_error(WSAGetLastError(), std::system_category(), "failed to send data");
 }
 void TCPSocket::Shutdown() {
-	shutdown(sock, SD_SEND);
+	if(shutdown(sock, SD_SEND) == 0)
+		throw std::system_error(WSAGetLastError(), std::system_category(), "socket shutdown failed");
 }
 std::string TCPSocket::Recv(SOCKET s) {
 	std::string res = "";
