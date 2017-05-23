@@ -7,8 +7,10 @@ public:
 	static std::string urlEncode(std::string url) {
 		std::stringstream ans;
 		std::string ignore = "#&.=/+?-_~";
-		for (int i = 0; i < url.size(); i++)
-			if ((url[i] >= 'a' && url[i] <= 'z') || (url[i] >= 'A' && url[i] <= 'Z') || (url[i] >= '0' && url[i] <= '9') || ignore.find(url[i]) != std::string::npos)
+		for (int i = 0; i < url.length(); i++)
+			if (url[i] == '%' && i < url.length() - 2 && isalnum(url[i + 1]) && isalnum(url[i + 2]))
+				ans << url[i];
+			else if (isalnum(url[i]) || ignore.find(url[i]) != std::string::npos)
 				ans << url[i];
 			else
 				ans << '%' << std::hex << std::uppercase << (int)url[i] << std::nouppercase;
