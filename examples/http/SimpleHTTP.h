@@ -1,8 +1,19 @@
 #pragma once
 #include "TCPSocket.h"
+#include <sstream>
 
 class HTTP {
 public:
+	static std::string urlEncode(std::string url) {
+		std::stringstream ans;
+		std::string ignore = "#&.=/+?-_~";
+		for (int i = 0; i < url.size(); i++)
+			if ((url[i] >= 'a' && url[i] <= 'z') || (url[i] >= 'A' && url[i] <= 'Z') || (url[i] >= '0' && url[i] <= '9') || ignore.find(url[i]) != std::string::npos)
+				ans << url[i];
+			else
+				ans << '%' << std::hex << std::uppercase << (int)url[i] << std::nouppercase;
+		return ans.str();
+	}
 	static std::string get(std::string url) {
 		size_t n = url.find("://");
 		if (n != std::string::npos)
@@ -15,7 +26,7 @@ public:
 		}
 		else
 			path = "/";
-		std::string request = "GET "+path+" HTTP 1/1\r\n\
+		std::string request = "GET "+urlEncode(path)+" HTTP 1/1\r\n\
 Host: "+adr+"\r\n\
 Connection: close\r\n\
 \r\n";
