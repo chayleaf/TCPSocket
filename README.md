@@ -1,4 +1,4 @@
-Basic socket library
+Basic socket library. Note that you must not include any winapi-related headers before TCPSocket.h since all the dependencies need to be included in the right order.
 Client example:
 ```cpp
 SocketSession wsa;
